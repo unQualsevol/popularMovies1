@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.unqualsevol.moviesproject1.adapters.PosterAdapter;
+import com.unqualsevol.moviesproject1.tasks.FetchMoviesTask;
 
 public class MoviesGridActivity extends AppCompatActivity {
 
@@ -31,8 +32,7 @@ public class MoviesGridActivity extends AppCompatActivity {
 
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-        //TODO: check the number of columns or make it a setting
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, getResources().getInteger(R.integer.number_of_columns));
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
@@ -44,7 +44,7 @@ public class MoviesGridActivity extends AppCompatActivity {
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         //loadMovies at least first page
-        mPosterAdapter.setData();
+        new FetchMoviesTask(mPosterAdapter).execute("true", getResources().getString(R.string.themoviedb_api_key), "ca-ES", "1");
         showMoviesDataView();
     }
 
