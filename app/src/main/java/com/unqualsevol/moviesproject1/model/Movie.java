@@ -2,10 +2,11 @@ package com.unqualsevol.moviesproject1.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class Movie {
+public class Movie implements Serializable {
 
     @SerializedName("poster_path")
     private String posterPath;

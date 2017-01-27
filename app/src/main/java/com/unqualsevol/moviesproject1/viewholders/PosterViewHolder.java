@@ -1,5 +1,7 @@
 package com.unqualsevol.moviesproject1.viewholders;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -7,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.unqualsevol.moviesproject1.DetailActivity;
 import com.unqualsevol.moviesproject1.R;
 import com.unqualsevol.moviesproject1.model.Movie;
 
@@ -31,6 +34,10 @@ public class PosterViewHolder extends RecyclerView.ViewHolder implements View.On
     @Override
     public void onClick(View v) {
         //TODO: how to call the click handler
+        Context context = itemView.getContext();
+        Intent intentToStartDetailActivity = new Intent(context, DetailActivity.class);
+        intentToStartDetailActivity.putExtra("movie", currentMovie);
+        context.startActivity(intentToStartDetailActivity);
     }
 
     public void setMovieData(Movie data) {
