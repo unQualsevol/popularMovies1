@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.unqualsevol.moviesproject1.adapters.PosterAdapter;
-import com.unqualsevol.moviesproject1.tasks.FetchMoviesTask;
+import com.unqualsevol.moviesproject1.model.SearchType;
+
+import java.util.Locale;
 
 public class MoviesGridActivity extends AppCompatActivity {
 
@@ -22,6 +26,10 @@ public class MoviesGridActivity extends AppCompatActivity {
     private TextView mErrorMessageDisplay;
 
     private ProgressBar mLoadingIndicator;
+
+    private MenuItem showMostPopular;
+
+    private MenuItem showTopRated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +45,17 @@ public class MoviesGridActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mPosterAdapter = new PosterAdapter();
+        //TODO: get the locale and the country from settings default the mobile Locale but able to choose
+        String language = Locale.getDefault().getDisplayLanguage();
+        String apiKey  = getResources().getString(R.string.themoviedb_api_key);
+        mPosterAdapter = new PosterAdapter(language, apiKey);
 
         mRecyclerView.setAdapter(mPosterAdapter);
 
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         //loadMovies at least first page
-        new FetchMoviesTask(mPosterAdapter).execute("true", getResources().getString(R.string.themoviedb_api_key), "ca-ES", "1");
+        mPosterAdapter.setSearchType(SearchType.POPULAR);
         showMoviesDataView();
     }
 
@@ -60,5 +71,34 @@ public class MoviesGridActivity extends AppCompatActivity {
         mRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.moviesgrid, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        showMostPopular = menu.findItem(R.id.action_show_most_popular);
+        showTopRated = menu.findItem(R.id.action_show_top_rated);
+        SearchType searchType = mPosterAdapter.getSearchType();
+        showTopRated.setVisible(searchType != SearchType.TOP_RATED);
+        showMostPopular.setVisible(searchType != SearchType.POPULAR);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_show_most_popular) {
+            mPosterAdapter.setSearchType(SearchType.POPULAR);
+            return true;
+        } else if (id == R.id.action_show_top_rated) {
+            mPosterAdapter.setSearchType(SearchType.TOP_RATED);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

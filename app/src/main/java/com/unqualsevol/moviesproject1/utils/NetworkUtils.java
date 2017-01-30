@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Scanner;
 
 public final class NetworkUtils {
@@ -36,20 +37,18 @@ public final class NetworkUtils {
 
     private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3";
 
-    private static final String POPULAR_ENTRY_POINT = "/movie/popular";
-
-    private static final String TOP_RATED_ENTRY_POINT = "/movie/top_rated";
-
     final static String API_KEY_PARAM = "api_key";
     final static String LANGUAGE_PARAM = "language";
 
     final static String PAGE_PARAM = "page";
 
-    public static URL buildUrl(boolean popular, String apikey, String language, String page) {
-        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL + (popular ? POPULAR_ENTRY_POINT : TOP_RATED_ENTRY_POINT)).buildUpon()
+    public static URL buildUrl(String entryPoint, String apikey, String language, String page) {
+        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL + entryPoint).buildUpon()
                 .appendQueryParameter(API_KEY_PARAM, apikey)
                 .appendQueryParameter(LANGUAGE_PARAM, language)
                 .appendQueryParameter(PAGE_PARAM, page)
+                //TODO: add the country
+//                .appendQueryParameter("region", Locale.getDefault().getCountry())
                 .build();
 
         URL url = null;
