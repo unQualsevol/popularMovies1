@@ -34,15 +34,22 @@ public class PosterViewHolder extends RecyclerView.ViewHolder implements View.On
     @Override
     public void onClick(View v) {
         //TODO: how to call the click handler
-        Context context = itemView.getContext();
-        Intent intentToStartDetailActivity = new Intent(context, DetailActivity.class);
-        intentToStartDetailActivity.putExtra("movie", currentMovie);
-        context.startActivity(intentToStartDetailActivity);
+        if(currentMovie != null) {
+            Context context = itemView.getContext();
+            Intent intentToStartDetailActivity = new Intent(context, DetailActivity.class);
+            intentToStartDetailActivity.putExtra("movie", currentMovie);
+            context.startActivity(intentToStartDetailActivity);
+        }
     }
 
     public void setMovieData(Movie data) {
         currentMovie = data;
-        updateViewHolder(data.getPosterPath(), data.getTitle());
+        if(data == null) {
+            showLoading();
+        } else {
+            updateViewHolder(data.getPosterPath(), data.getTitle());
+            showData();
+        }
     }
 
     public void updateViewHolder(String posterPath, String title) {

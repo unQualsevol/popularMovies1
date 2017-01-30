@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="bottom|center_horizontal"
-        style="@style/TextAppearance.AppCompat.Small"/>
+        style="@style/TextAppearance.AppCompat.Small"
+        />
     <!--TODO add small rating?-->
     <ProgressBar
         android:id="@+id/pb_loading_movie_poster"

@@ -7,10 +7,7 @@ import com.unqualsevol.moviesproject1.model.MoviesPage;
 import com.unqualsevol.moviesproject1.utils.NetworkUtils;
 
 import java.net.URL;
-
-/**
- * Created by agimenez on 26/01/17.
- */
+import java.net.UnknownHostException;
 
 public class FetchMoviesTask extends AsyncTask<String, Void, MoviesPage> {
 
@@ -23,13 +20,16 @@ public class FetchMoviesTask extends AsyncTask<String, Void, MoviesPage> {
     @Override
     protected MoviesPage doInBackground(String... params) {
         //TODO: validate size of params
-        URL url = NetworkUtils.buildUrl(Boolean.parseBoolean(params[0]), params[1], params[2], params[3]);
+        URL url = NetworkUtils.buildUrl(params[0], params[1], params[2], params[3]);
         MoviesPage result;
         try {
             result = NetworkUtils
                     .getResponseFromHttpUrl(url, MoviesPage.class);
-        } catch (Exception e) {
+        } catch (UnknownHostException e) {
             //TODO show some useful error
+            e.printStackTrace();
+            return null;
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

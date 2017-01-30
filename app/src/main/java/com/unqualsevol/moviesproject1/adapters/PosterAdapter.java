@@ -10,13 +10,12 @@ import android.view.ViewGroup;
 import com.unqualsevol.moviesproject1.R;
 import com.unqualsevol.moviesproject1.model.Movie;
 import com.unqualsevol.moviesproject1.model.MoviesPage;
+import com.unqualsevol.moviesproject1.model.SearchType;
 import com.unqualsevol.moviesproject1.tasks.FetchMoviesTask;
 import com.unqualsevol.moviesproject1.viewholders.PosterViewHolder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder>{
 
@@ -25,12 +24,18 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder>{
     private SparseArray<MoviesPage> moviesPageMap = new SparseArray<>();
     private List<Integer> loadingPages = new ArrayList<>();
     private int totalAmountOfMovies = 0;
-    private String theMovieDb_api_key;
+    private final String apiKey;
+    private final String language;
+    private SearchType searchType;
+
+    public PosterAdapter(String language, String apiKey) {
+        this.language = language;
+        this.apiKey = apiKey;
+    }
 
     @Override
     public PosterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        theMovieDb_api_key = parent.getResources().getString(R.string.themoviedb_api_key);
         View view = LayoutInflater.from(context).inflate(R.layout.movie_grid_item, parent, false);
         return new PosterViewHolder(view);
     }
@@ -41,10 +46,11 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder>{
         int posInPage = position % 20;
         MoviesPage currentPage = moviesPageMap.get(page);
         if(currentPage == null) {
+            holder.setMovieData(null);
             holder.showLoading();
             if(!loadingPages.contains(page)) {
                 loadingPages.add(page);
-                new FetchMoviesTask(this).execute("true", theMovieDb_api_key, "ca-ES", String.valueOf(page));
+                new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, "ca-ES", String.valueOf(page));
             }
         } else {
             Movie currentMovie = moviesPageMap.get(page).getMovies().get(posInPage);
@@ -59,10 +65,34 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder>{
     }
 
     public void setData(MoviesPage page){
-        //save data
-        moviesPageMap.put(page.getPage(), page);
-        loadingPages.remove(new Integer(page.getPage()));
-        totalAmountOfMovies = page.getTotalResults();
+        if(page == null) {
+            loadingPages.clear();
+        } else {
+            moviesPageMap.put(page.getPage(), page);
+            loadingPages.remove(new Integer(page.getPage()));
+            totalAmountOfMovies = page.getTotalResults();
+            notifyDataSetChanged();
+        }
+    }
+
+    public SearchType getSearchType() {
+        return searchType;
+    }
+
+    public void setSearchType(SearchType searchType) {
+        boolean changed = searchType != this.searchType;
+        this.searchType = searchType;
+        if(changed) {
+            clear();
+            loadingPages.add(1);
+            new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, "ca-ES", String.valueOf(1));
+        }
+    }
+
+    private void clear() {
+        totalAmountOfMovies = 0;
+        loadingPages.clear();
+        moviesPageMap.clear();
         notifyDataSetChanged();
     }
 }
