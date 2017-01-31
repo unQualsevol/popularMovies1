@@ -1,21 +1,21 @@
 package com.unqualsevol.moviesproject1;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.unqualsevol.moviesproject1.adapters.PosterAdapter;
+import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
 import com.unqualsevol.moviesproject1.model.SearchType;
 
 import java.util.Locale;
 
-public class MoviesGridActivity extends AppCompatActivity {
+public class MoviesGridActivity extends AppCompatActivity implements OnRefreshCompleteListener {
 
     private static final String TAG = MoviesGridActivity.class.getSimpleName();
 
@@ -23,13 +23,13 @@ public class MoviesGridActivity extends AppCompatActivity {
 
     private PosterAdapter mPosterAdapter;
 
-    private TextView mErrorMessageDisplay;
-
-    private ProgressBar mLoadingIndicator;
+    private SwipeRefreshLayout swipeContainer;
 
     private MenuItem showMostPopular;
 
     private MenuItem showTopRated;
+
+    private Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +38,7 @@ public class MoviesGridActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
 
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-
         GridLayoutManager layoutManager = new GridLayoutManager(this, getResources().getInteger(R.integer.number_of_columns));
-
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
@@ -52,25 +49,17 @@ public class MoviesGridActivity extends AppCompatActivity {
 
         mRecyclerView.setAdapter(mPosterAdapter);
 
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-
         //loadMovies at least first page
         mPosterAdapter.setSearchType(SearchType.POPULAR);
-        showMoviesDataView();
-    }
 
-    private void showMoviesDataView() {
-        /* First, make sure the error is invisible */
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        /* Then, make sure the weather data is visible */
-        mRecyclerView.setVisibility(View.VISIBLE);
-    }
-
-    private void showErrorMessage() {
-        /* First, hide the currently visible data */
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        /* Then, show the error */
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPosterAdapter.restart();
+            }
+        });
+        mPosterAdapter.registerOnRefreshCompleteListener(this);
     }
 
     @Override
@@ -100,5 +89,20 @@ public class MoviesGridActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRefreshComplete() {
+        swipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void onFailedRefresh() {
+        swipeContainer.setRefreshing(false);
+        if(mToast != null) {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(this, R.string.not_available_error_message, Toast.LENGTH_SHORT);
+        mToast.show();
     }
 }
