@@ -2,8 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
-<!--TODO: extract dimensions-->
+    android:padding="@dimen/detail_general_padding">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,7 +13,7 @@
             android:id="@+id/tv_movie_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="42sp" />
+            android:textSize="@dimen/detail_movie_title_textSize" />
 
         <ImageView
             android:id="@+id/iv_great_poster"
@@ -22,26 +22,26 @@
 
         <TextView
             android:id="@+id/tv_original_movie_title"
+            style="@android:style/TextAppearance"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tv_movie_overview"
+            style="@android:style/TextAppearance.Small"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tv_user_rating"
+            style="@android:style/TextAppearance.Small"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tv_release_date"
+            style="@android:style/TextAppearance.Small"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </ScrollView>
