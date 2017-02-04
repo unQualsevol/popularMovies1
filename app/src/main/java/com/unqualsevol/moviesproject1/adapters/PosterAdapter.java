@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.unqualsevol.moviesproject1.BuildConfig;
 import com.unqualsevol.moviesproject1.R;
 import com.unqualsevol.moviesproject1.interfaces.DataReceiver;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
@@ -19,6 +20,7 @@ import com.unqualsevol.moviesproject1.viewholders.PosterViewHolder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implements DataReceiver<MoviesPage> {
@@ -33,9 +35,9 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
     private SearchType searchType;
     private Set<OnRefreshCompleteListener> listeners = new HashSet<>();
 
-    public PosterAdapter(String language, String apiKey) {
-        this.language = language;
-        this.apiKey = apiKey;
+    public PosterAdapter() {
+        this.language = Locale.getDefault().getDisplayLanguage();;
+        this.apiKey = BuildConfig.themoviedb_api_key;
     }
 
     @Override
@@ -55,7 +57,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
             holder.showLoading();
             if(!loadingPages.contains(page)) {
                 loadingPages.add(page);
-                new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, "ca-ES", String.valueOf(page));
+                new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, language, String.valueOf(page));
             }
         } else {
             Movie currentMovie = moviesPageMap.get(page).getMovies().get(posInPage);
@@ -109,7 +111,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
     public void restart() {
         clear();
         loadingPages.add(1);
-        new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, "ca-ES", String.valueOf(1));
+        new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, language, String.valueOf(1));
     }
 
     public void registerOnRefreshCompleteListener(OnRefreshCompleteListener listener) {

@@ -43,9 +43,7 @@ public class MoviesGridActivity extends AppCompatActivity implements OnRefreshCo
         mRecyclerView.setHasFixedSize(true);
 
         //TODO: get the locale and the country from settings default the mobile Locale but able to choose
-        String language = Locale.getDefault().getDisplayLanguage();
-        String apiKey  = getResources().getString(R.string.themoviedb_api_key);
-        mPosterAdapter = new PosterAdapter(language, apiKey);
+        mPosterAdapter = new PosterAdapter();
 
         mRecyclerView.setAdapter(mPosterAdapter);
 
