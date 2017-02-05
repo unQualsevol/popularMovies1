@@ -21,15 +21,18 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public final class NetworkUtils {
 
     private final static Gson gson = new Gson();
+
+    private final static OkHttpClient client = new OkHttpClient();
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
@@ -62,13 +65,9 @@ public final class NetworkUtils {
     }
 
     public static <T> T getResponseFromHttpUrl(URL url, Class<T> type) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        try {
-            InputStream in = urlConnection.getInputStream();
-            return gson.fromJson(new InputStreamReader(in), type);
-        } finally {
-            urlConnection.disconnect();
-        }
+        Request request = new Request.Builder().url(url).build();
+        Response response = client.newCall(request).execute();
+        return gson.fromJson(response.body().string(), type);
     }
 
     public static Uri buildImageUrl(String size, String posterPath) {
