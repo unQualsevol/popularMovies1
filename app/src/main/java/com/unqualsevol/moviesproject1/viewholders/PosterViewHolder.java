@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -22,6 +23,8 @@ public class PosterViewHolder extends RecyclerView.ViewHolder implements View.On
 
     private final TextView mPosterTitleTextView;
 
+    private final RatingBar mRatingRatingBar;
+
     private final ProgressBar mPosterProgressBar;
 
     private Movie currentMovie;
@@ -30,6 +33,7 @@ public class PosterViewHolder extends RecyclerView.ViewHolder implements View.On
         super(view);
         mPosterImageView = (ImageView) view.findViewById(R.id.iv_movie_poster);
         mPosterTitleTextView = (TextView) view.findViewById(R.id.tv_movie_poster_title);
+        mRatingRatingBar = (RatingBar) view.findViewById(R.id.rb_small_movie_rating);
         mPosterProgressBar = (ProgressBar) view.findViewById(R.id.pb_loading_movie_poster);
         view.setOnClickListener(this);
     }
@@ -49,28 +53,31 @@ public class PosterViewHolder extends RecyclerView.ViewHolder implements View.On
         if (data == null) {
             showLoading();
         } else {
-            updateViewHolder(data.getPosterPath(), data.getTitle());
+            updateViewHolder(data.getPosterPath(), data.getTitle(), data.getVoteAverage().floatValue()/2);
             showData();
         }
     }
 
-    public void updateViewHolder(String posterPath, String title) {
+    public void updateViewHolder(String posterPath, String title, float rating) {
         Picasso.with(itemView.getContext())
                 .load(NetworkUtils.buildImageUrl(
                         itemView.getResources().getString(R.string.grid_size_poster), posterPath))
                 .into(mPosterImageView);
         mPosterTitleTextView.setText(title);
+        mRatingRatingBar.setRating(rating);
     }
 
     public void showData() {
         mPosterImageView.setVisibility(View.VISIBLE);
         mPosterTitleTextView.setVisibility(View.VISIBLE);
+        mRatingRatingBar.setVisibility(View.VISIBLE);
         mPosterProgressBar.setVisibility(View.INVISIBLE);
     }
 
     public void showLoading() {
         mPosterImageView.setVisibility(View.INVISIBLE);
         mPosterTitleTextView.setVisibility(View.INVISIBLE);
+        mRatingRatingBar.setVisibility(View.INVISIBLE);
         mPosterProgressBar.setVisibility(View.VISIBLE);
     }
 }

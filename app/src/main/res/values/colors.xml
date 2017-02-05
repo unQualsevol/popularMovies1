@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="duskYellow">#F9F298</color>
+    <color name="canaryYellow">#FFEF00</color>
     <color name="lightGrey">#D3D3D3</color>
 </resources>
