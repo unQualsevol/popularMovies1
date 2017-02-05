@@ -40,7 +40,7 @@ public class DetailActivity extends AppCompatActivity {
         Intent intentThatStartedThisActivity = getIntent();
 
         if (intentThatStartedThisActivity != null) {
-            updateView((Movie) intentThatStartedThisActivity.getSerializableExtra(INTENT_EXTRA_MOVIE_DATA));
+            updateView((Movie) intentThatStartedThisActivity.getParcelableExtra(INTENT_EXTRA_MOVIE_DATA));
         }
     }
 
