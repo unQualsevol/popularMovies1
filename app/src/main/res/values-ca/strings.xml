@@ -6,4 +6,5 @@
     <string name="detail_original_title">"Títol Original: "</string>
     <string name="detail_synopsis">"Sinopsi: "</string>
     <string name="detail_release_date">"Data de Publicació: "</string>
+    <string name="action_refresh">Refrescar</string>
 </resources>

@@ -1,40 +1,41 @@
 package com.unqualsevol.moviesproject1;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
 
 import com.unqualsevol.moviesproject1.adapters.PosterAdapter;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
 import com.unqualsevol.moviesproject1.model.SearchType;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MoviesGridActivity extends AppCompatActivity implements OnRefreshCompleteListener {
 
     private static final String TAG = MoviesGridActivity.class.getSimpleName();
 
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.recyclerview_movies) RecyclerView mRecyclerView;
+
+    @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeContainer;
 
     private PosterAdapter mPosterAdapter;
-
-    private SwipeRefreshLayout swipeContainer;
 
     private MenuItem showMostPopular;
 
     private MenuItem showTopRated;
 
-    private Toast mToast;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies_grid);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
+        ButterKnife.bind(this);
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, getResources().getInteger(R.integer.number_of_columns));
         mRecyclerView.setLayoutManager(layoutManager);
@@ -47,7 +48,6 @@ public class MoviesGridActivity extends AppCompatActivity implements OnRefreshCo
         //loadMovies at least first page
         mPosterAdapter.setSearchType(SearchType.POPULAR);
 
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -94,10 +94,12 @@ public class MoviesGridActivity extends AppCompatActivity implements OnRefreshCo
     @Override
     public void onFailedRefresh() {
         swipeContainer.setRefreshing(false);
-        if (mToast != null) {
-            mToast.cancel();
-        }
-        mToast = Toast.makeText(this, R.string.not_available_error_message, Toast.LENGTH_SHORT);
-        mToast.show();
+        Snackbar.make(mRecyclerView, R.string.not_available_error_message, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.action_refresh, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mPosterAdapter.restart();
+                    }
+                }).show();
     }
 }
