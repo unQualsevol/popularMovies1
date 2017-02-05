@@ -47,8 +47,6 @@ public final class NetworkUtils {
                 .appendQueryParameter(API_KEY_PARAM, apikey)
                 .appendQueryParameter(LANGUAGE_PARAM, language)
                 .appendQueryParameter(PAGE_PARAM, page)
-                //TODO: add the country
-//                .appendQueryParameter("region", Locale.getDefault().getCountry())
                 .build();
 
         URL url = null;
@@ -74,6 +72,6 @@ public final class NetworkUtils {
     }
 
     public static Uri buildImageUrl(String size, String posterPath) {
-        return Uri.parse(IMAGEDB_BASE_URL+size+posterPath).buildUpon().build();
+        return Uri.parse(IMAGEDB_BASE_URL + size + posterPath).buildUpon().build();
     }
 }

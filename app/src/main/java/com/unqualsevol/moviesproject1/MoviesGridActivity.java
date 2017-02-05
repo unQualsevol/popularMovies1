@@ -13,8 +13,6 @@ import com.unqualsevol.moviesproject1.adapters.PosterAdapter;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
 import com.unqualsevol.moviesproject1.model.SearchType;
 
-import java.util.Locale;
-
 public class MoviesGridActivity extends AppCompatActivity implements OnRefreshCompleteListener {
 
     private static final String TAG = MoviesGridActivity.class.getSimpleName();
@@ -42,7 +40,6 @@ public class MoviesGridActivity extends AppCompatActivity implements OnRefreshCo
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        //TODO: get the locale and the country from settings default the mobile Locale but able to choose
         mPosterAdapter = new PosterAdapter();
 
         mRecyclerView.setAdapter(mPosterAdapter);
@@ -97,7 +94,7 @@ public class MoviesGridActivity extends AppCompatActivity implements OnRefreshCo
     @Override
     public void onFailedRefresh() {
         swipeContainer.setRefreshing(false);
-        if(mToast != null) {
+        if (mToast != null) {
             mToast.cancel();
         }
         mToast = Toast.makeText(this, R.string.not_available_error_message, Toast.LENGTH_SHORT);

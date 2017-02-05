@@ -36,7 +36,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
     private Set<OnRefreshCompleteListener> listeners = new HashSet<>();
 
     public PosterAdapter() {
-        this.language = Locale.getDefault().getDisplayLanguage();;
+        this.language = Locale.getDefault().getLanguage();
         this.apiKey = BuildConfig.themoviedb_api_key;
     }
 
@@ -52,10 +52,10 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
         int page = 1 + position / 20;
         int posInPage = position % 20;
         MoviesPage currentPage = moviesPageMap.get(page);
-        if(currentPage == null) {
+        if (currentPage == null) {
             holder.setMovieData(null);
             holder.showLoading();
-            if(!loadingPages.contains(page)) {
+            if (!loadingPages.contains(page)) {
                 loadingPages.add(page);
                 new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, language, String.valueOf(page));
             }
@@ -72,8 +72,8 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
     }
 
     @Override
-    public void setData(MoviesPage page){
-        if(page == null) {
+    public void setData(MoviesPage page) {
+        if (page == null) {
             loadingPages.clear();
             for (OnRefreshCompleteListener listener : listeners) {
                 listener.onFailedRefresh();
@@ -96,7 +96,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
     public void setSearchType(SearchType searchType) {
         boolean changed = searchType != this.searchType;
         this.searchType = searchType;
-        if(changed) {
+        if (changed) {
             restart();
         }
     }
