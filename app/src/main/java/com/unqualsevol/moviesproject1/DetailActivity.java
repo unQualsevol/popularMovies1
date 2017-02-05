@@ -11,35 +11,32 @@ import com.squareup.picasso.Picasso;
 import com.unqualsevol.moviesproject1.model.Movie;
 import com.unqualsevol.moviesproject1.utils.NetworkUtils;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_MOVIE_DATA;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private TextView mTitleTextView;
+    @BindView(R.id.tv_movie_title) TextView mTitleTextView;
 
-    private ImageView mGreatPosterImageViem;
+    @BindView(R.id.iv_great_poster) ImageView mGreatPosterImageView;
 
-    private TextView mOriginalTitleTextView;
+    @BindView(R.id.tv_original_movie_title) TextView mOriginalTitleTextView;
 
-    private TextView mOverviewTextView;
+    @BindView(R.id.tv_movie_overview) TextView mOverviewTextView;
 
-    private TextView mUserRatingTextView;
+    @BindView(R.id.tv_user_rating) TextView mUserRatingTextView;
 
-    private RatingBar mUserRatingRatingBar;
+    @BindView(R.id.rb_movie_rating) RatingBar mUserRatingRatingBar;
 
-    private TextView mReleaseDateTextView;
+    @BindView(R.id.tv_release_date) TextView mReleaseDateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        mTitleTextView = (TextView) findViewById(R.id.tv_movie_title);
-        mGreatPosterImageViem = (ImageView) findViewById(R.id.iv_great_poster);
-        mOriginalTitleTextView = (TextView) findViewById(R.id.tv_original_movie_title);
-        mOverviewTextView = (TextView) findViewById(R.id.tv_movie_overview);
-        mUserRatingTextView = (TextView) findViewById(R.id.tv_user_rating);
-        mUserRatingRatingBar = (RatingBar) findViewById(R.id.rb_movie_rating);
-        mReleaseDateTextView = (TextView) findViewById(R.id.tv_release_date);
+        ButterKnife.bind(this);
         Intent intentThatStartedThisActivity = getIntent();
 
         if (intentThatStartedThisActivity != null) {
@@ -52,7 +49,7 @@ public class DetailActivity extends AppCompatActivity {
         Picasso.with(this)
                 .load(NetworkUtils.buildImageUrl(
                         getResources().getString(R.string.detail_size_poster), movie.getPosterPath()))
-                .into(mGreatPosterImageViem);
+                .into(mGreatPosterImageView);
         mOriginalTitleTextView.setText(getString(R.string.detail_original_title) + movie.getOriginalTitle());
         mOverviewTextView.setText(getString(R.string.detail_synopsis) + movie.getOverview());
         mUserRatingRatingBar.setRating(movie.getVoteAverage().floatValue()/2);
