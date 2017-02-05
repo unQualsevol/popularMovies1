@@ -16,6 +16,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "themoviedb_api_key", "\"INSERT_YOUR_API_KEY\""
+        }
+        debug {
+            buildConfigField "String", "themoviedb_api_key", "\"INSERT_YOUR_API_KEY\""
         }
     }
 }

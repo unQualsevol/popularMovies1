@@ -6,18 +6,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.unqualsevol.moviesproject1.DetailActivity;
 import com.unqualsevol.moviesproject1.R;
 import com.unqualsevol.moviesproject1.model.Movie;
+import com.unqualsevol.moviesproject1.utils.NetworkUtils;
+
+import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_MOVIE_DATA;
 
 public class PosterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private final ImageView mPosterImageView;
 
     private final TextView mPosterTitleTextView;
+
+    private final RatingBar mRatingRatingBar;
 
     private final ProgressBar mPosterProgressBar;
 
@@ -27,46 +33,51 @@ public class PosterViewHolder extends RecyclerView.ViewHolder implements View.On
         super(view);
         mPosterImageView = (ImageView) view.findViewById(R.id.iv_movie_poster);
         mPosterTitleTextView = (TextView) view.findViewById(R.id.tv_movie_poster_title);
+        mRatingRatingBar = (RatingBar) view.findViewById(R.id.rb_small_movie_rating);
         mPosterProgressBar = (ProgressBar) view.findViewById(R.id.pb_loading_movie_poster);
         view.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        //TODO: how to call the click handler
-        if(currentMovie != null) {
+        if (currentMovie != null) {
             Context context = itemView.getContext();
             Intent intentToStartDetailActivity = new Intent(context, DetailActivity.class);
-            intentToStartDetailActivity.putExtra("movie", currentMovie);
+            intentToStartDetailActivity.putExtra(INTENT_EXTRA_MOVIE_DATA, currentMovie);
             context.startActivity(intentToStartDetailActivity);
         }
     }
 
     public void setMovieData(Movie data) {
         currentMovie = data;
-        if(data == null) {
+        if (data == null) {
             showLoading();
         } else {
-            updateViewHolder(data.getPosterPath(), data.getTitle());
+            updateViewHolder(data.getPosterPath(), data.getTitle(), data.getVoteAverage().floatValue()/2);
             showData();
         }
     }
 
-    public void updateViewHolder(String posterPath, String title) {
-        //TODO: extract url construction
-        Picasso.with(itemView.getContext()).load("http://image.tmdb.org/t/p/w342"+posterPath).into(mPosterImageView);
+    public void updateViewHolder(String posterPath, String title, float rating) {
+        Picasso.with(itemView.getContext())
+                .load(NetworkUtils.buildImageUrl(
+                        itemView.getResources().getString(R.string.grid_size_poster), posterPath))
+                .into(mPosterImageView);
         mPosterTitleTextView.setText(title);
+        mRatingRatingBar.setRating(rating);
     }
 
     public void showData() {
         mPosterImageView.setVisibility(View.VISIBLE);
         mPosterTitleTextView.setVisibility(View.VISIBLE);
+        mRatingRatingBar.setVisibility(View.VISIBLE);
         mPosterProgressBar.setVisibility(View.INVISIBLE);
     }
 
     public void showLoading() {
         mPosterImageView.setVisibility(View.INVISIBLE);
         mPosterTitleTextView.setVisibility(View.INVISIBLE);
+        mRatingRatingBar.setVisibility(View.INVISIBLE);
         mPosterProgressBar.setVisibility(View.VISIBLE);
     }
 }

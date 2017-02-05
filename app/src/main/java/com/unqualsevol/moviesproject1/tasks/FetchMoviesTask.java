@@ -1,43 +1,41 @@
 package com.unqualsevol.moviesproject1.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
-import com.unqualsevol.moviesproject1.adapters.PosterAdapter;
+import com.unqualsevol.moviesproject1.interfaces.DataReceiver;
 import com.unqualsevol.moviesproject1.model.MoviesPage;
 import com.unqualsevol.moviesproject1.utils.NetworkUtils;
 
 import java.net.URL;
-import java.net.UnknownHostException;
 
 public class FetchMoviesTask extends AsyncTask<String, Void, MoviesPage> {
 
-    private final PosterAdapter adapter;
-    //TODO: change poster adapter for an interface
-    public FetchMoviesTask(PosterAdapter adapter) {
-        this.adapter = adapter;
+    private static final String TAG = FetchMoviesTask.class.getSimpleName();
+    private final DataReceiver dataReceiver;
+
+    public FetchMoviesTask(DataReceiver dataReceiver) {
+        this.dataReceiver = dataReceiver;
     }
 
     @Override
     protected MoviesPage doInBackground(String... params) {
-        //TODO: validate size of params
+        if(params.length != 4) {
+            return null;
+        }
         URL url = NetworkUtils.buildUrl(params[0], params[1], params[2], params[3]);
-        MoviesPage result;
+        MoviesPage result = null;
         try {
             result = NetworkUtils
                     .getResponseFromHttpUrl(url, MoviesPage.class);
-        } catch (UnknownHostException e) {
-            //TODO show some useful error
-            e.printStackTrace();
-            return null;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            Log.e(TAG, e.getMessage(), e);
         }
         return result;
     }
 
     @Override
     protected void onPostExecute(MoviesPage page) {
-        adapter.setData(page);
+        dataReceiver.setData(page);
     }
 }

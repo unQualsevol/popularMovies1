@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Asessor de pel·lícules</string>
+    <string name="not_available_error_message">El servei no és accessible ara mateix. Si us plau torni a provar refrescant la vista.</string>
+    <string name="show_top_rated">Veure les millor valorades</string>
+    <string name="show_most_popular">Veure les més populars</string>
+    <string name="detail_original_title">"Títol Original: "</string>
+    <string name="detail_synopsis">"Sinopsi: "</string>
+    <string name="detail_release_date">"Data de Publicació: "</string>
+</resources>

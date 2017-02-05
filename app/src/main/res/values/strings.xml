@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Movie adviser</string>
-    <string name="error_message">An error has occurred. Please try again by clicking REFRESH</string>
+    <string name="not_available_error_message">The service is unavailable. Please try again by refresh the view.</string>
     <string name="show_top_rated">Show top rated</string>
     <string name="show_most_popular">Show most popular</string>
+    <string name="detail_original_title">"Original Title: "</string>
+    <string name="detail_synopsis">"Synopsis: "</string>
+    <string name="detail_release_date">"Release date: "</string>
 </resources>

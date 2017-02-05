@@ -26,8 +26,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Locale;
-import java.util.Scanner;
 
 public final class NetworkUtils {
 
@@ -36,6 +34,8 @@ public final class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3";
+
+    private static final String IMAGEDB_BASE_URL = "http://image.tmdb.org/t/p/";
 
     final static String API_KEY_PARAM = "api_key";
     final static String LANGUAGE_PARAM = "language";
@@ -47,8 +47,6 @@ public final class NetworkUtils {
                 .appendQueryParameter(API_KEY_PARAM, apikey)
                 .appendQueryParameter(LANGUAGE_PARAM, language)
                 .appendQueryParameter(PAGE_PARAM, page)
-                //TODO: add the country
-//                .appendQueryParameter("region", Locale.getDefault().getCountry())
                 .build();
 
         URL url = null;
@@ -71,5 +69,9 @@ public final class NetworkUtils {
         } finally {
             urlConnection.disconnect();
         }
+    }
+
+    public static Uri buildImageUrl(String size, String posterPath) {
+        return Uri.parse(IMAGEDB_BASE_URL + size + posterPath).buildUpon().build();
     }
 }
