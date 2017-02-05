@@ -6,4 +6,5 @@
     <string name="detail_original_title">"Título Original: "</string>
     <string name="detail_synopsis">"Sinopsis: "</string>
     <string name="detail_release_date">"Fecha de lanzamiento: "</string>
+    <string name="action_refresh">Refrescar</string>
 </resources>
