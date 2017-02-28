@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tab_headers">
+        <item>Millor Valorades</item>
+        <item>Més Populars</item>
+        <item>Preferides</item>
+    </string-array>
+</resources>
