@@ -94,11 +94,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
     }
 
     public void setSearchType(SearchType searchType) {
-        boolean changed = searchType != this.searchType;
         this.searchType = searchType;
-        if (changed) {
-            restart();
-        }
     }
 
     private void clear() {

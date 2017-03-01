@@ -1,7 +1,7 @@
 package com.unqualsevol.moviesproject1.model;
 
 public enum SearchType {
-    POPULAR("/movie/popular"), TOP_RATED("/movie/top_rated");
+    POPULAR("/movie/popular"), TOP_RATED("/movie/top_rated"), DATABASE("");
 
     private String entryPoint;
 
