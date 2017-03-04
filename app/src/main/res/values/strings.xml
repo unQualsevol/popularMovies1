@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Movie adviser</string>
+    <string name="content_authority" translatable="false">com.unqualsevol.moviesproject1</string>
+
     <string name="not_available_error_message">The service is unavailable. Please try again by refresh the view.</string>
     <string name="show_top_rated">Show top rated</string>
     <string name="show_most_popular">Show most popular</string>
