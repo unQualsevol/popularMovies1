@@ -20,6 +20,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <!-- Add button -->
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/add_button"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@android:color/primary_text_dark"
+            android:background="@color/colorPrimary"
+            android:onClick="onClickAddMovie"/>
+
         <TextView
             android:id="@+id/tv_original_movie_title"
             style="@android:style/TextAppearance"

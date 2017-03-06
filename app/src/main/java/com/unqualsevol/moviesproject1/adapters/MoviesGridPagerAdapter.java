@@ -25,22 +25,23 @@ public class MoviesGridPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        SearchType searchType;
         switch (position) {
             case MOST_POPULAR_TAB:
-                MoviesGridFragment mostPopularGrid =  new MoviesGridFragment();
-                mostPopularGrid.setSearchType(SearchType.POPULAR);
-                return mostPopularGrid;
+                searchType = SearchType.POPULAR;
+                break;
             case TOP_RATED_TAB:
-                MoviesGridFragment topRatedGrid = new MoviesGridFragment();
-                topRatedGrid.setSearchType(SearchType.TOP_RATED);
-                return topRatedGrid;
+                searchType = SearchType.TOP_RATED;
+                break;
             case FAVORITES_TAB:
-                MoviesGridFragment favoritesGrid = new MoviesGridFragment();
-                favoritesGrid.setSearchType(SearchType.DATABASE);
-                return favoritesGrid;
+                searchType = SearchType.DATABASE;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid tab");
         }
+        MoviesGridFragment moviesGridFragment =  new MoviesGridFragment();
+        moviesGridFragment.setSearchType(searchType);
+        return moviesGridFragment;
     }
 
     @Override
@@ -50,7 +51,6 @@ public class MoviesGridPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-
         return tabHeaderNames[position];
     }
 }

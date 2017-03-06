@@ -9,4 +9,5 @@
     <string name="detail_synopsis">"Synopsis: "</string>
     <string name="detail_release_date">"Release date: "</string>
     <string name="action_refresh">Refresh</string>
+    <string name="add_button">Add to Favorites</string>
 </resources>
