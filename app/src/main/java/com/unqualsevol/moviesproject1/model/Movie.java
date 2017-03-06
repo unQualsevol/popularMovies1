@@ -34,6 +34,10 @@ public class Movie implements Parcelable {
     @SerializedName("vote_average")
     private BigDecimal voteAverage;
 
+    public Movie() {
+        super();
+    }
+
     public Movie(Parcel source) {
         posterPath = source.readString();
         adult = source.readByte() != 0;

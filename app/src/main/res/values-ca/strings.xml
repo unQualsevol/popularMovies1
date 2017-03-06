@@ -7,4 +7,5 @@
     <string name="detail_synopsis">"Sinopsi: "</string>
     <string name="detail_release_date">"Data de Publicació: "</string>
     <string name="action_refresh">Refrescar</string>
+    <string name="add_button">Afegir a preferides</string>
 </resources>
