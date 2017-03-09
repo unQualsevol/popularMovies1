@@ -10,4 +10,7 @@
     <string name="detail_release_date">"Release date: "</string>
     <string name="action_refresh">Refresh</string>
     <string name="add_button">Add to Favorites</string>
+    <string name="remove_favorite">Remove from favorites</string>
+    <string name="message_add_favorite">Movie added to favorites</string>
+    <string name="message_removed_favorite">Movie removed from favorites</string>
 </resources>
