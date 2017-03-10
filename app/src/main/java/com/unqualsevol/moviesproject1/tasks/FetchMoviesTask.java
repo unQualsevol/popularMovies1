@@ -23,7 +23,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, MoviesPage> {
         if(params.length != 4) {
             return null;
         }
-        URL url = NetworkUtils.buildUrl(params[0], params[1], params[2], params[3]);
+        URL url = NetworkUtils.buildMoviesUrl(params[0], params[1], params[2], params[3]);
         MoviesPage result = null;
         try {
             result = NetworkUtils

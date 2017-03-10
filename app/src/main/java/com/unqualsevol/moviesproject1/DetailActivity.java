@@ -217,7 +217,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             mGreatPosterImageView.setImageBitmap(image);
         } else {
             Picasso.with(this)
-                    .load(NetworkUtils.buildImageUrl(movie.getPosterPath()))
+                    .load(NetworkUtils.buildImageUri(movie.getPosterPath()))
                     .into(mTarget);
         }
         mOriginalTitleTextView.setText(getString(R.string.detail_original_title) + movie.getOriginalTitle());
