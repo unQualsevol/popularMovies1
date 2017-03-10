@@ -14,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import java.math.BigDecimal;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_FROM_DATABASE;
 import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_MOVIE_DATA;
 import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_MOVIE_ID;
 
@@ -59,6 +61,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     public static final int ID_MOVIES_LOADER = 499;
     public static final int ID_MOVIES_INSERT_TOKEN = 503;
+    public static final int ID_MOVIES_DELETE_TOKEN = 509;
 
     //TODO use binding!
     @BindView(R.id.tv_movie_title) TextView mTitleTextView;
@@ -75,9 +78,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @BindView(R.id.tv_release_date) TextView mReleaseDateTextView;
 
+    @BindView(R.id.addButton) Button mAddButton;
+
     private Movie mMovie;
 
     private Bitmap mPoster;
+
+    private boolean mFromDatabase;
 
     private Target mTarget = new Target() {
         @Override
@@ -104,10 +111,17 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         ButterKnife.bind(this);
         Intent intentThatStartedThisActivity = getIntent();
 
+        if(savedInstanceState != null) {
+            mFromDatabase = savedInstanceState.getBoolean(INTENT_EXTRA_FROM_DATABASE);
+        }
+
         if (intentThatStartedThisActivity != null) {
             if(intentThatStartedThisActivity.hasExtra(INTENT_EXTRA_MOVIE_DATA)) {
                 mMovie = intentThatStartedThisActivity.getParcelableExtra(INTENT_EXTRA_MOVIE_DATA);
                 updateView(mMovie, null);
+                Bundle bundle = new Bundle();
+                bundle.putInt(INTENT_EXTRA_MOVIE_ID, mMovie.getId());
+                getSupportLoaderManager().initLoader(ID_MOVIES_LOADER, bundle, this);
             } else if(intentThatStartedThisActivity.hasExtra(INTENT_EXTRA_MOVIE_ID)) {
                 int movieId = intentThatStartedThisActivity.getIntExtra(INTENT_EXTRA_MOVIE_ID, 0);
                 Bundle bundle = new Bundle();
@@ -115,6 +129,18 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 getSupportLoaderManager().initLoader(ID_MOVIES_LOADER, bundle, this);
             }
         }
+
+        if(mFromDatabase) {
+            mAddButton.setText(R.string.remove_favorite);
+        } else {
+            mAddButton.setText(R.string.add_button);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(INTENT_EXTRA_FROM_DATABASE, mFromDatabase);
     }
 
     public void onClickAddMovie(final View view) {
@@ -125,13 +151,31 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             protected void onInsertComplete(int token, Object cookie, Uri uri) {
                 super.onInsertComplete(token, cookie, uri);
                 if(uri != null) {
-                    Snackbar.make(view, "Movie added to favorites", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(view, R.string.message_add_favorite, Snackbar.LENGTH_SHORT)
                             .show();
                     //notify something?
+                    mAddButton.setText(R.string.remove_favorite);
+                    mFromDatabase = true;
+                }
+            }
+
+            @Override
+            protected void onDeleteComplete(int token, Object cookie, int result) {
+                super.onDeleteComplete(token, cookie, result);
+                if(result > 0) {
+                    Snackbar.make(view, R.string.message_removed_favorite, Snackbar.LENGTH_SHORT)
+                            .show();
+                    //notify something?
+                    mAddButton.setText(R.string.add_button);
+                    mFromDatabase = false;
                 }
             }
         };
-        handler.startInsert(ID_MOVIES_INSERT_TOKEN, null, MoviesContract.MovieEntry.CONTENT_URI, contentValues);
+        if(mFromDatabase) {
+            handler.startDelete(ID_MOVIES_DELETE_TOKEN, null, MoviesContract.MovieEntry.buildMovieUriWithId(mMovie.getId()), null, null);
+        } else {
+            handler.startInsert(ID_MOVIES_INSERT_TOKEN, null, MoviesContract.MovieEntry.CONTENT_URI, contentValues);
+        }
     }
 
     @Override
@@ -154,8 +198,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        data.moveToFirst();
-        updateView(data);
+        mFromDatabase = data.getCount() > 0;
+        if(mFromDatabase) {
+            data.moveToFirst();
+            updateView(data);
+            mAddButton.setText(R.string.remove_favorite);
+        }
     }
 
     @Override

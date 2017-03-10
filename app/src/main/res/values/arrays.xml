@@ -3,6 +3,6 @@
     <string-array name="tab_headers">
         <item>Most Popular</item>
         <item>Top Rated</item>
-        <item>Favourites</item>
+        <item>Favorites</item>
     </string-array>
 </resources>

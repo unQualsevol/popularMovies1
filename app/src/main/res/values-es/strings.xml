@@ -8,4 +8,7 @@
     <string name="detail_release_date">"Fecha de lanzamiento: "</string>
     <string name="action_refresh">Refrescar</string>
     <string name="add_button">Añadir a favoritas</string>
+    <string name="remove_favorite">Quitar de favoritas</string>
+    <string name="message_add_favorite">Se ha añadido la película a favoritos</string>
+    <string name="message_removed_favorite">Se ha quitado la película de favoritos</string>
 </resources>
