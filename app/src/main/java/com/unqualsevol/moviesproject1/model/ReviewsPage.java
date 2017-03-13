@@ -4,15 +4,25 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MoviesPage implements Page {
+public class ReviewsPage implements Page {
 
+    @SerializedName("id")
+    private int movieId;
     private int page;
     @SerializedName("total_results")
     private int totalResults;
     @SerializedName("total_pages")
     private int totalPages;
     @SerializedName("results")
-    private List<Movie> movies;
+    private List<Review> reviews;
+
+    public int getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
+    }
 
     @Override
     public int getPage() {
@@ -41,11 +51,11 @@ public class MoviesPage implements Page {
         this.totalPages = totalPages;
     }
 
-    public List<Movie> getMovies() {
-        return movies;
+    public List<Review> getReviews() {
+        return reviews;
     }
 
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

@@ -12,7 +12,6 @@ import android.widget.RatingBar;
 import com.squareup.picasso.Picasso;
 import com.unqualsevol.moviesproject1.DetailActivity;
 import com.unqualsevol.moviesproject1.R;
-import com.unqualsevol.moviesproject1.data.MoviesContract;
 import com.unqualsevol.moviesproject1.model.Movie;
 import com.unqualsevol.moviesproject1.utils.NetworkUtils;
 
@@ -66,7 +65,7 @@ public class PosterViewHolder extends RecyclerView.ViewHolder implements View.On
 
     public void updateViewHolder(String posterPath, float rating) {
         Picasso.with(itemView.getContext())
-                .load(NetworkUtils.buildImageUrl(posterPath))
+                .load(NetworkUtils.buildImageUri(posterPath))
                 .into(mPosterImageView);
         mRatingRatingBar.setRating(rating);
     }

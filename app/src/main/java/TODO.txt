@@ -1,0 +1,53 @@
+- Content provider
+    - Database design
+        - Trailers (*)
+            - insert list of trailers
+            - query retrieve all trailers from a movie
+            - update trailers (*)
+            - delete trailers when delete movies (*)
+        - Reviews (*) (same as trailers, maybe I can join models)
+- Details:
+    + Movie Details layout contains a section for displaying trailer videos and user reviews.
+    - Use Constrains Layout
+    - Add a list of trailers
+        + App requests for related videos for a selected movie via the /movie/{id}/videos endpoint in a background thread and displays those details when the user selects a movie.
+        - Intent to youtube
+        + When a trailer is selected, app uses an Intent to launch the trailer.
+    - Add a list of reviews
+        + App requests for user reviews for a selected movie via the /movie/{id}/reviews endpoint in a background thread and displays those details when the user selects a movie.
+        - Intent to web browser
+- General View
+    - Add a settings menu (*)
+        - Language and country of choice
+    - Show that a movie has been mark as favorite (*)
+    - Favorite a movie by keep pressing (*)
+    - hide top bar when scroll down (*)
+    - hide bottom bar (*)
+- Styles (*)
+    - Apply material design
+    - Nice favorite button
++ Lastly, you’ll optimize your app experience for tablet.
++ Implement sharing functionality to allow the user to share the first trailer’s YouTube URL from the movie details screen. (*)
+
+
+
+COMPLETED:
+- Content provider
+    - Database design
+- Movies DONE
+        - insert a movie DONE
+        - query retrieve all movies DONE
+        - query retrieve movie by id DONE
+        - delete movie DONE
+- Details:
+    - Add a button to Favorite a Movie DONE
+        + In the movies detail screen, a user can tap a button(for example, a star) to mark it as a Favorite. DONE
+        - This is going to store the movie details to be able to see details offline DONE
+        - Unfavorite to be able to remove a movie DONE
+        - Process to update database when detail opened from web and was favorited before DONE
+- General View
+    - Add tabs to show Most Popular | Top Rated | Favorites (*) DONE
+    - onSaveInstanceState/onRestoreInstanceState DONE ? (new to come...)
+- Favorites tab DONE
+    - a new adapter to use a cursor DONE
+    - use a cursor loader to retrieve the data from database DONE

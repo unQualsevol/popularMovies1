@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.unqualsevol.moviesproject1.R;
 import com.unqualsevol.moviesproject1.fragments.MoviesGridFragment;
-import com.unqualsevol.moviesproject1.model.SearchType;
+import com.unqualsevol.moviesproject1.model.SearchMode;
 
 public class MoviesGridPagerAdapter extends FragmentPagerAdapter {
 
@@ -25,22 +25,22 @@ public class MoviesGridPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        SearchType searchType;
+        SearchMode searchMode;
         switch (position) {
             case MOST_POPULAR_TAB:
-                searchType = SearchType.POPULAR;
+                searchMode = SearchMode.POPULAR;
                 break;
             case TOP_RATED_TAB:
-                searchType = SearchType.TOP_RATED;
+                searchMode = SearchMode.TOP_RATED;
                 break;
             case FAVORITES_TAB:
-                searchType = SearchType.DATABASE;
+                searchMode = SearchMode.DATABASE;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid tab");
         }
         MoviesGridFragment moviesGridFragment =  new MoviesGridFragment();
-        moviesGridFragment.setSearchType(searchType);
+        moviesGridFragment.setSearchType(searchMode);
         return moviesGridFragment;
     }
 

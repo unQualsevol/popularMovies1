@@ -1,16 +1,29 @@
 <resources>
     <string name="app_name">Movie adviser</string>
     <string name="content_authority" translatable="false">com.unqualsevol.moviesproject1</string>
+    <string name="rating_format" translatable="false">(%.1f)</string>
+    <string name="year_format" translatable="false">%4.4s</string>
 
     <string name="not_available_error_message">The service is unavailable. Please try again by refresh the view.</string>
     <string name="show_top_rated">Show top rated</string>
     <string name="show_most_popular">Show most popular</string>
     <string name="detail_original_title">"Original Title: "</string>
-    <string name="detail_synopsis">"Synopsis: "</string>
-    <string name="detail_release_date">"Release date: "</string>
     <string name="action_refresh">Refresh</string>
     <string name="add_button">Add to Favorites</string>
     <string name="remove_favorite">Remove from favorites</string>
     <string name="message_add_favorite">Movie added to favorites</string>
     <string name="message_removed_favorite">Movie removed from favorites</string>
+    <string name="author">Author:</string>
+    <string name="reviews">Reviews:</string>
+    <string name="trailers">Trailers:</string>
+
+
+    <!--Mocks -->
+    <string name="demo_title" translatable="false">Your name.</string>
+    <string name="demo_year" translatable="false">2016</string>
+    <string name="demo_original_title" translatable="false">君の名は。</string>
+    <string name="demo_synopsis" translatable="false">Two strangers find themselves linked in a bizarre way. When a connection forms, will distance be the only thing to keep them apart?</string>
+    <string name="demo_author" translatable="false">BecauseImBatman</string>
+    <string name="demo_review" translatable="false">It has beautiful animation and beautiful characters. It is a funny, sweet and emotional roller coaster of a crowd-pleaser that manages to win your heart.</string>
+    <string name="demo_trailer" translatable="false">Your Name - Trailer [English Subtitled]</string>
 </resources>
