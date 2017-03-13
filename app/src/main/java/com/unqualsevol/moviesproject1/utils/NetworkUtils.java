@@ -23,7 +23,7 @@ public final class NetworkUtils {
 
     private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3";
 
-    private static final String IMAGEDB_BASE_URL = "http://image.tmdb.org/t/p/w780";
+    private static final String IMAGEDB_BASE_URL = "http://image.tmdb.org/t/p/w500";
 
     final static String PATH_MOVIE = "movie";
     final static String PATH_REVIEWS = "reviews";

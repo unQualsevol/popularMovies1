@@ -8,20 +8,25 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.unqualsevol.moviesproject1.adapters.DetailsAdapter;
 import com.unqualsevol.moviesproject1.data.MoviesContract;
+import com.unqualsevol.moviesproject1.model.DetailsMode;
 import com.unqualsevol.moviesproject1.model.Movie;
 import com.unqualsevol.moviesproject1.utils.MoviesUtils;
 import com.unqualsevol.moviesproject1.utils.NetworkUtils;
@@ -78,9 +83,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @BindView(R.id.tv_release_date) TextView mReleaseDateTextView;
 
-    @BindView(R.id.addButton) Button mAddButton;
+    @BindView(R.id.fab_favorite) FloatingActionButton mFavoriteFloatingActionButton;
+
+    @BindView(R.id.recyclerview_trailers)
+    RecyclerView mTrailersRecyclerView;
 
     private Movie mMovie;
+    private int mMovieId;
 
     private Bitmap mPoster;
 
@@ -113,34 +122,47 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         if(savedInstanceState != null) {
             mFromDatabase = savedInstanceState.getBoolean(INTENT_EXTRA_FROM_DATABASE);
+            mMovieId = savedInstanceState.getInt(INTENT_EXTRA_MOVIE_ID);
         }
 
         if (intentThatStartedThisActivity != null) {
             if(intentThatStartedThisActivity.hasExtra(INTENT_EXTRA_MOVIE_DATA)) {
                 mMovie = intentThatStartedThisActivity.getParcelableExtra(INTENT_EXTRA_MOVIE_DATA);
+                mMovieId = mMovie.getId();
                 updateView(mMovie, null);
                 Bundle bundle = new Bundle();
-                bundle.putInt(INTENT_EXTRA_MOVIE_ID, mMovie.getId());
+                bundle.putInt(INTENT_EXTRA_MOVIE_ID, mMovieId);
                 getSupportLoaderManager().initLoader(ID_MOVIES_LOADER, bundle, this);
             } else if(intentThatStartedThisActivity.hasExtra(INTENT_EXTRA_MOVIE_ID)) {
-                int movieId = intentThatStartedThisActivity.getIntExtra(INTENT_EXTRA_MOVIE_ID, 0);
+                mMovieId = intentThatStartedThisActivity.getIntExtra(INTENT_EXTRA_MOVIE_ID, 0);
                 Bundle bundle = new Bundle();
-                bundle.putInt(INTENT_EXTRA_MOVIE_ID, movieId);
+                bundle.putInt(INTENT_EXTRA_MOVIE_ID, mMovieId);
                 getSupportLoaderManager().initLoader(ID_MOVIES_LOADER, bundle, this);
             }
         }
 
         if(mFromDatabase) {
-            mAddButton.setText(R.string.remove_favorite);
+            mFavoriteFloatingActionButton.setImageResource(R.drawable.unstar);
         } else {
-            mAddButton.setText(R.string.add_button);
+            mFavoriteFloatingActionButton.setImageResource(R.drawable.star);
         }
+
+
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        mTrailersRecyclerView.addItemDecoration(dividerItemDecoration);
+        mTrailersRecyclerView.setLayoutManager(layoutManager);
+        mTrailersRecyclerView.setHasFixedSize(true);
+        mTrailersRecyclerView.setAdapter(new DetailsAdapter(mMovieId, DetailsMode.BOTH));
+
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(INTENT_EXTRA_FROM_DATABASE, mFromDatabase);
+        outState.putInt(INTENT_EXTRA_MOVIE_ID, mMovieId);
     }
 
     public void onClickAddMovie(final View view) {
@@ -154,7 +176,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     Snackbar.make(view, R.string.message_add_favorite, Snackbar.LENGTH_SHORT)
                             .show();
                     //notify something?
-                    mAddButton.setText(R.string.remove_favorite);
+                    mFavoriteFloatingActionButton.setImageResource(R.drawable.unstar);
                     mFromDatabase = true;
                 }
             }
@@ -166,7 +188,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     Snackbar.make(view, R.string.message_removed_favorite, Snackbar.LENGTH_SHORT)
                             .show();
                     //notify something?
-                    mAddButton.setText(R.string.add_button);
+                    mFavoriteFloatingActionButton.setImageResource(R.drawable.star);
                     mFromDatabase = false;
                 }
             }
@@ -202,7 +224,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if(mFromDatabase) {
             data.moveToFirst();
             updateView(data);
-            mAddButton.setText(R.string.remove_favorite);
+            mFavoriteFloatingActionButton.setImageResource(R.drawable.unstar);
         }
     }
 
@@ -220,11 +242,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     .load(NetworkUtils.buildImageUri(movie.getPosterPath()))
                     .into(mTarget);
         }
-        mOriginalTitleTextView.setText(getString(R.string.detail_original_title) + movie.getOriginalTitle());
-        mOverviewTextView.setText(getString(R.string.detail_synopsis) + movie.getOverview());
+        mOriginalTitleTextView.setText(movie.getOriginalTitle());
+        mOverviewTextView.setText(movie.getOverview());
         mUserRatingRatingBar.setRating(movie.getVoteAverage().floatValue()/2);
-        mUserRatingTextView.setText("(" + movie.getVoteAverage() + ")");
-        mReleaseDateTextView.setText(getString(R.string.detail_release_date) + movie.getReleaseDate());
+
+        mUserRatingTextView.setText(String.format(getString(R.string.rating_format), movie.getVoteAverage()));
+        mReleaseDateTextView.setText(String.format(getString(R.string.year_format), movie.getReleaseDate()));
     }
 
     private void updateView(Cursor cursor) {

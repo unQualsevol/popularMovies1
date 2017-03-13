@@ -4,11 +4,12 @@
     <string name="show_top_rated">Ver las mejor valoradas</string>
     <string name="show_most_popular">Ver las más populares</string>
     <string name="detail_original_title">"Título Original: "</string>
-    <string name="detail_synopsis">"Sinopsis: "</string>
-    <string name="detail_release_date">"Fecha de lanzamiento: "</string>
     <string name="action_refresh">Refrescar</string>
     <string name="add_button">Añadir a favoritas</string>
     <string name="remove_favorite">Quitar de favoritas</string>
     <string name="message_add_favorite">Se ha añadido la película a favoritos</string>
     <string name="message_removed_favorite">Se ha quitado la película de favoritos</string>
+    <string name="author">Autor</string>
+    <string name="reviews">Reseñas:</string>
+    <string name="trailers">Avances:</string>
 </resources>

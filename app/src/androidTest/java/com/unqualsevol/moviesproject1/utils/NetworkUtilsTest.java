@@ -2,7 +2,7 @@ package com.unqualsevol.moviesproject1.utils;
 
 import android.net.Uri;
 
-import com.unqualsevol.moviesproject1.model.SearchType;
+import com.unqualsevol.moviesproject1.model.SearchMode;
 
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class NetworkUtilsTest {
 
     @Test
     public void buildMoviesUrl() throws Exception {
-        URL actualUrl = NetworkUtils.buildMoviesUrl(SearchType.TOP_RATED.getEntryPoint(), dummyApiKey, dummyLanguage, dummyPage);
+        URL actualUrl = NetworkUtils.buildMoviesUrl(SearchMode.TOP_RATED.getEntryPoint(), dummyApiKey, dummyLanguage, dummyPage);
         assertEquals(EXPECTED_MOVIES_URL, actualUrl.toString());
     }
 

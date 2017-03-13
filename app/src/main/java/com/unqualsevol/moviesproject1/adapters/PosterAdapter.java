@@ -13,7 +13,7 @@ import com.unqualsevol.moviesproject1.interfaces.DataReceiver;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
 import com.unqualsevol.moviesproject1.model.Movie;
 import com.unqualsevol.moviesproject1.model.MoviesPage;
-import com.unqualsevol.moviesproject1.model.SearchType;
+import com.unqualsevol.moviesproject1.model.SearchMode;
 import com.unqualsevol.moviesproject1.tasks.FetchMoviesTask;
 import com.unqualsevol.moviesproject1.viewholders.PosterViewHolder;
 
@@ -32,7 +32,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
     private int totalAmountOfMovies = 0;
     private final String apiKey;
     private final String language;
-    private SearchType searchType;
+    private SearchMode searchMode;
     private Set<OnRefreshCompleteListener> listeners = new HashSet<>();
 
     public PosterAdapter() {
@@ -57,7 +57,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
             holder.showLoading();
             if (!loadingPages.contains(page)) {
                 loadingPages.add(page);
-                new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, language, String.valueOf(page));
+                new FetchMoviesTask(this).execute(FetchMoviesTask.MOVIES, searchMode.getEntryPoint(), apiKey, language, String.valueOf(page));
             }
         } else {
             Movie currentMovie = moviesPageMap.get(page).getMovies().get(posInPage);
@@ -80,7 +80,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
             }
         } else {
             moviesPageMap.put(page.getPage(), page);
-            loadingPages.remove(new Integer(page.getPage()));
+            loadingPages.remove(Integer.valueOf(page.getPage()));
             totalAmountOfMovies = page.getTotalResults();
             notifyDataSetChanged();
             for (OnRefreshCompleteListener listener : listeners) {
@@ -89,12 +89,12 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
         }
     }
 
-    public SearchType getSearchType() {
-        return searchType;
+    public SearchMode getSearchMode() {
+        return searchMode;
     }
 
-    public void setSearchType(SearchType searchType) {
-        this.searchType = searchType;
+    public void setSearchMode(SearchMode searchMode) {
+        this.searchMode = searchMode;
     }
 
     private void clear() {
@@ -106,8 +106,8 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
 
     public void restart() {
         clear();
-        loadingPages.add(1);
-        new FetchMoviesTask(this).execute(searchType.getEntryPoint(), apiKey, language, String.valueOf(1));
+        loadingPages.add(FetchMoviesTask.FIRST_PAGE);
+        new FetchMoviesTask(this).execute(FetchMoviesTask.MOVIES, searchMode.getEntryPoint(), apiKey, language, String.valueOf(FetchMoviesTask.FIRST_PAGE));
     }
 
     public void registerOnRefreshCompleteListener(OnRefreshCompleteListener listener) {

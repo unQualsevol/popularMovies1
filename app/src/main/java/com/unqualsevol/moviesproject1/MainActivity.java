@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.unqualsevol.moviesproject1.adapters.MoviesGridPagerAdapter;
 
-public class MoviesGridActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
 
@@ -15,7 +15,7 @@ public class MoviesGridActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movies_grid);
+        setContentView(R.layout.activity_main);
 
         mMoviesGridPagerAdapter = new MoviesGridPagerAdapter(getSupportFragmentManager(), this);
         mViewPager = (ViewPager) findViewById(R.id.pager);

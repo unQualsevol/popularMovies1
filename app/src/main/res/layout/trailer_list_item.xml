@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vh_trailer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_detail_item_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/trailer"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintVertical_bias="0.5"
+        android:layout_marginLeft="0dp"
+        android:layout_marginStart="0dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_detail_item_content"
+        android:textColor="@color/primary_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        tools:text="@string/demo_trailer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintLeft_toRightOf="@+id/iv_detail_item_icon"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintVertical_bias="0.488" />
+
+    <ProgressBar
+        android:id="@+id/pb_loading_details"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:visibility="invisible"
+        android:layout_marginTop="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/iv_detail_item_icon"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/iv_detail_item_icon"
+        app:layout_constraintRight_toLeftOf="@+id/iv_detail_item_icon"
+        android:layout_marginRight="0dp"
+        android:layout_marginLeft="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/iv_detail_item_icon" />
+
+</android.support.constraint.ConstraintLayout>

@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class TrailersPage {
+public class TrailersPage implements Page {
 
     @SerializedName("id")
     private int movieId;
@@ -25,5 +25,20 @@ public class TrailersPage {
 
     public void setTrailers(List<Trailer> trailers) {
         this.trailers = trailers;
+    }
+
+    @Override
+    public int getPage() {
+        return 1;
+    }
+
+    @Override
+    public int getTotalResults() {
+        return (trailers == null) ? 0 : trailers.size();
+    }
+
+    @Override
+    public int getTotalPages() {
+        return 1;
     }
 }

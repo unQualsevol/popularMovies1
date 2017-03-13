@@ -21,7 +21,7 @@ import com.unqualsevol.moviesproject1.adapters.FavoritesAdapter;
 import com.unqualsevol.moviesproject1.adapters.PosterAdapter;
 import com.unqualsevol.moviesproject1.data.MoviesContract;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
-import com.unqualsevol.moviesproject1.model.SearchType;
+import com.unqualsevol.moviesproject1.model.SearchMode;
 
 public class MoviesGridFragment extends Fragment
         implements OnRefreshCompleteListener,
@@ -47,10 +47,10 @@ public class MoviesGridFragment extends Fragment
 
     private FavoritesAdapter mFavoritesAdapter = new FavoritesAdapter();
 
-    private SearchType mSearchType;
+    private SearchMode mSearchMode;
 
-    public void setSearchType(SearchType mSearchType) {
-        this.mSearchType = mSearchType;
+    public void setSearchType(SearchMode mSearchMode) {
+        this.mSearchMode = mSearchMode;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class MoviesGridFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("searchType", mSearchType.ordinal());
+        outState.putInt("searchType", mSearchMode.ordinal());
     }
 
     @Override
@@ -77,14 +77,14 @@ public class MoviesGridFragment extends Fragment
 
         if(savedInstanceState != null && savedInstanceState.containsKey("searchType")) {
             int searchTypeOrdinal = savedInstanceState.getInt("searchType");
-            mSearchType = SearchType.values()[searchTypeOrdinal];
+            mSearchMode = SearchMode.values()[searchTypeOrdinal];
         }
 
-        switch (mSearchType) {
+        switch (mSearchMode) {
             case POPULAR:
             case TOP_RATED:
                 mRecyclerView.setAdapter(mPosterAdapter);
-                mPosterAdapter.setSearchType(mSearchType);
+                mPosterAdapter.setSearchMode(mSearchMode);
                 mPosterAdapter.registerOnRefreshCompleteListener(this);
                 mPosterAdapter.restart();
                 swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -111,7 +111,7 @@ public class MoviesGridFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        if(mSearchType == SearchType.DATABASE) {
+        if(mSearchMode == SearchMode.DATABASE) {
             getLoaderManager().restartLoader(ID_POSTER_LOADER, null, this);
         }
     }
