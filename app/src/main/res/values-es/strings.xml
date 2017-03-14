@@ -1,12 +1,9 @@
 <resources>
     <string name="app_name">Asesor de películas</string>
     <string name="not_available_error_message">El servicio no está disponible. Por favor intente de nuevo más tarde refrescando la ventana.</string>
-    <string name="show_top_rated">Ver las mejor valoradas</string>
-    <string name="show_most_popular">Ver las más populares</string>
-    <string name="detail_original_title">"Título Original: "</string>
+    <string name="detail_original_title">Título Original:</string>
     <string name="action_refresh">Refrescar</string>
-    <string name="add_button">Añadir a favoritas</string>
-    <string name="remove_favorite">Quitar de favoritas</string>
+    <string name="action_share">Compartir</string>
     <string name="message_add_favorite">Se ha añadido la película a favoritos</string>
     <string name="message_removed_favorite">Se ha quitado la película de favoritos</string>
     <string name="author">Autor</string>

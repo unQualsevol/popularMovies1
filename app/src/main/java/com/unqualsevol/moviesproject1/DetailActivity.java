@@ -11,12 +11,16 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -26,8 +30,10 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.unqualsevol.moviesproject1.adapters.DetailsAdapter;
 import com.unqualsevol.moviesproject1.data.MoviesContract;
+import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
 import com.unqualsevol.moviesproject1.model.DetailsMode;
 import com.unqualsevol.moviesproject1.model.Movie;
+import com.unqualsevol.moviesproject1.model.Trailer;
 import com.unqualsevol.moviesproject1.utils.MoviesUtils;
 import com.unqualsevol.moviesproject1.utils.NetworkUtils;
 
@@ -37,11 +43,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_FROM_DATABASE;
+import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_MESSAGE_VISIBLE;
 import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_MOVIE_DATA;
 import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_MOVIE_ID;
 
-public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-
+public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, OnRefreshCompleteListener {
 
 
     public static final String[] MOVIE_PROJECTION = {
@@ -69,21 +75,29 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public static final int ID_MOVIES_DELETE_TOKEN = 509;
 
     //TODO use binding!
-    @BindView(R.id.tv_movie_title) TextView mTitleTextView;
+    @BindView(R.id.tv_movie_title)
+    TextView mTitleTextView;
 
-    @BindView(R.id.iv_great_poster) ImageView mGreatPosterImageView;
+    @BindView(R.id.iv_great_poster)
+    ImageView mGreatPosterImageView;
 
-    @BindView(R.id.tv_original_movie_title) TextView mOriginalTitleTextView;
+    @BindView(R.id.tv_original_movie_title)
+    TextView mOriginalTitleTextView;
 
-    @BindView(R.id.tv_movie_overview) TextView mOverviewTextView;
+    @BindView(R.id.tv_movie_overview)
+    TextView mOverviewTextView;
 
-    @BindView(R.id.tv_user_rating) TextView mUserRatingTextView;
+    @BindView(R.id.tv_user_rating)
+    TextView mUserRatingTextView;
 
-    @BindView(R.id.rb_movie_rating) RatingBar mUserRatingRatingBar;
+    @BindView(R.id.rb_movie_rating)
+    RatingBar mUserRatingRatingBar;
 
-    @BindView(R.id.tv_release_date) TextView mReleaseDateTextView;
+    @BindView(R.id.tv_release_date)
+    TextView mReleaseDateTextView;
 
-    @BindView(R.id.fab_favorite) FloatingActionButton mFavoriteFloatingActionButton;
+    @BindView(R.id.fab_favorite)
+    FloatingActionButton mFavoriteFloatingActionButton;
 
     @BindView(R.id.recyclerview_trailers)
     RecyclerView mTrailersRecyclerView;
@@ -94,6 +108,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private Bitmap mPoster;
 
     private boolean mFromDatabase;
+    private boolean mErrorMessageVisible;
 
     private Target mTarget = new Target() {
         @Override
@@ -112,6 +127,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         }
     };
+    private DetailsAdapter mDetailsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,20 +136,27 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         ButterKnife.bind(this);
         Intent intentThatStartedThisActivity = getIntent();
 
-        if(savedInstanceState != null) {
-            mFromDatabase = savedInstanceState.getBoolean(INTENT_EXTRA_FROM_DATABASE);
-            mMovieId = savedInstanceState.getInt(INTENT_EXTRA_MOVIE_ID);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(INTENT_EXTRA_FROM_DATABASE)) {
+                mFromDatabase = savedInstanceState.getBoolean(INTENT_EXTRA_FROM_DATABASE);
+            }
+            if (savedInstanceState.containsKey(INTENT_EXTRA_MOVIE_ID)) {
+                mMovieId = savedInstanceState.getInt(INTENT_EXTRA_MOVIE_ID);
+            }
+            if (savedInstanceState.containsKey(INTENT_EXTRA_MESSAGE_VISIBLE)) {
+                mErrorMessageVisible = savedInstanceState.getBoolean(INTENT_EXTRA_MESSAGE_VISIBLE);
+            }
         }
 
         if (intentThatStartedThisActivity != null) {
-            if(intentThatStartedThisActivity.hasExtra(INTENT_EXTRA_MOVIE_DATA)) {
+            if (intentThatStartedThisActivity.hasExtra(INTENT_EXTRA_MOVIE_DATA)) {
                 mMovie = intentThatStartedThisActivity.getParcelableExtra(INTENT_EXTRA_MOVIE_DATA);
                 mMovieId = mMovie.getId();
                 updateView(mMovie, null);
                 Bundle bundle = new Bundle();
                 bundle.putInt(INTENT_EXTRA_MOVIE_ID, mMovieId);
                 getSupportLoaderManager().initLoader(ID_MOVIES_LOADER, bundle, this);
-            } else if(intentThatStartedThisActivity.hasExtra(INTENT_EXTRA_MOVIE_ID)) {
+            } else if (intentThatStartedThisActivity.hasExtra(INTENT_EXTRA_MOVIE_ID)) {
                 mMovieId = intentThatStartedThisActivity.getIntExtra(INTENT_EXTRA_MOVIE_ID, 0);
                 Bundle bundle = new Bundle();
                 bundle.putInt(INTENT_EXTRA_MOVIE_ID, mMovieId);
@@ -141,12 +164,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         }
 
-        if(mFromDatabase) {
+        if (mFromDatabase) {
             mFavoriteFloatingActionButton.setImageResource(R.drawable.unstar);
         } else {
             mFavoriteFloatingActionButton.setImageResource(R.drawable.star);
         }
-
 
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -154,8 +176,56 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mTrailersRecyclerView.addItemDecoration(dividerItemDecoration);
         mTrailersRecyclerView.setLayoutManager(layoutManager);
         mTrailersRecyclerView.setHasFixedSize(true);
-        mTrailersRecyclerView.setAdapter(new DetailsAdapter(mMovieId, DetailsMode.BOTH));
+        mDetailsAdapter = new DetailsAdapter(mMovieId, DetailsMode.BOTH);
+        mDetailsAdapter.registerOnRefreshCompleteListener(this);
+        mTrailersRecyclerView.setAdapter(mDetailsAdapter);
 
+
+        if (mErrorMessageVisible) {
+            onFailedRefresh();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_share) {
+            Intent shareIntent = createShareMovieIntent();
+            if (shareIntent != null) {
+                startActivity(shareIntent);
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private Intent createShareMovieIntent() {
+        Trailer trailer = mDetailsAdapter.getTrailer(0);
+        if (trailer == null) {
+            return null;
+        }
+        Intent shareIntent = ShareCompat.IntentBuilder
+                .from(this)
+                .setType("text/plain")
+                .setText(buildMessage(mMovie.getTitle(), trailer))
+                .getIntent();
+        return shareIntent;
+    }
+
+    private String buildMessage(String title, Trailer trailer) {
+        return String.format(
+                getResources().getString(R.string.share_message_format,
+                        title,
+                        NetworkUtils.buildYoutubeUri(trailer.getKey())));
     }
 
     @Override
@@ -163,6 +233,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         super.onSaveInstanceState(outState);
         outState.putBoolean(INTENT_EXTRA_FROM_DATABASE, mFromDatabase);
         outState.putInt(INTENT_EXTRA_MOVIE_ID, mMovieId);
+        outState.putBoolean(INTENT_EXTRA_MESSAGE_VISIBLE, mErrorMessageVisible);
     }
 
     public void onClickAddMovie(final View view) {
@@ -172,7 +243,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             @Override
             protected void onInsertComplete(int token, Object cookie, Uri uri) {
                 super.onInsertComplete(token, cookie, uri);
-                if(uri != null) {
+                if (uri != null) {
                     Snackbar.make(view, R.string.message_add_favorite, Snackbar.LENGTH_SHORT)
                             .show();
                     //notify something?
@@ -184,7 +255,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             @Override
             protected void onDeleteComplete(int token, Object cookie, int result) {
                 super.onDeleteComplete(token, cookie, result);
-                if(result > 0) {
+                if (result > 0) {
                     Snackbar.make(view, R.string.message_removed_favorite, Snackbar.LENGTH_SHORT)
                             .show();
                     //notify something?
@@ -193,7 +264,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 }
             }
         };
-        if(mFromDatabase) {
+        if (mFromDatabase) {
             handler.startDelete(ID_MOVIES_DELETE_TOKEN, null, MoviesContract.MovieEntry.buildMovieUriWithId(mMovie.getId()), null, null);
         } else {
             handler.startInsert(ID_MOVIES_INSERT_TOKEN, null, MoviesContract.MovieEntry.CONTENT_URI, contentValues);
@@ -221,7 +292,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mFromDatabase = data.getCount() > 0;
-        if(mFromDatabase) {
+        if (mFromDatabase) {
             data.moveToFirst();
             updateView(data);
             mFavoriteFloatingActionButton.setImageResource(R.drawable.unstar);
@@ -235,7 +306,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     private void updateView(Movie movie, Bitmap image) {
         mTitleTextView.setText(movie.getTitle());
-        if(image != null) {
+        if (image != null) {
             mGreatPosterImageView.setImageBitmap(image);
         } else {
             Picasso.with(this)
@@ -244,7 +315,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         mOriginalTitleTextView.setText(movie.getOriginalTitle());
         mOverviewTextView.setText(movie.getOverview());
-        mUserRatingRatingBar.setRating(movie.getVoteAverage().floatValue()/2);
+        mUserRatingRatingBar.setRating(movie.getVoteAverage().floatValue() / 2);
 
         mUserRatingTextView.setText(String.format(getString(R.string.rating_format), movie.getVoteAverage()));
         mReleaseDateTextView.setText(String.format(getString(R.string.year_format), movie.getReleaseDate()));
@@ -263,4 +334,23 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mPoster = MoviesUtils.getImage(posterInBytes);
         updateView(mMovie, mPoster);
     }
+
+    @Override
+    public void onRefreshComplete() {
+
+    }
+
+    @Override
+    public void onFailedRefresh() {
+        mErrorMessageVisible = true;
+        Snackbar.make(mTrailersRecyclerView, R.string.not_available_error_message, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.action_refresh, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((DetailsAdapter) mTrailersRecyclerView.getAdapter()).restart();
+                        mErrorMessageVisible = false;
+                    }
+                }).show();
+    }
+
 }

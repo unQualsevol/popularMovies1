@@ -23,9 +23,11 @@ import com.unqualsevol.moviesproject1.data.MoviesContract;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
 import com.unqualsevol.moviesproject1.model.SearchMode;
 
+import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_SEARCH_TYPE;
+
 public class MoviesGridFragment extends Fragment
         implements OnRefreshCompleteListener,
-        LoaderManager.LoaderCallbacks<Cursor>{
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String[] POSTER_PROJECTION = {
             MoviesContract.MovieEntry.COLUMN_MOVIE_ID,
@@ -68,16 +70,18 @@ public class MoviesGridFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("searchType", mSearchMode.ordinal());
+        outState.putInt(INTENT_EXTRA_SEARCH_TYPE, mSearchMode.ordinal());
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(savedInstanceState != null && savedInstanceState.containsKey("searchType")) {
-            int searchTypeOrdinal = savedInstanceState.getInt("searchType");
-            mSearchMode = SearchMode.values()[searchTypeOrdinal];
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(INTENT_EXTRA_SEARCH_TYPE)) {
+                int searchTypeOrdinal = savedInstanceState.getInt(INTENT_EXTRA_SEARCH_TYPE);
+                mSearchMode = SearchMode.values()[searchTypeOrdinal];
+            }
         }
 
         switch (mSearchMode) {
@@ -111,7 +115,7 @@ public class MoviesGridFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        if(mSearchMode == SearchMode.DATABASE) {
+        if (mSearchMode == SearchMode.DATABASE) {
             getLoaderManager().restartLoader(ID_POSTER_LOADER, null, this);
         }
     }

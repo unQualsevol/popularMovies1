@@ -1,12 +1,9 @@
 <resources>
     <string name="app_name">Asessor de pel·lícules</string>
     <string name="not_available_error_message">El servei no és accessible ara mateix. Si us plau torni a provar refrescant la vista.</string>
-    <string name="show_top_rated">Veure les millor valorades</string>
-    <string name="show_most_popular">Veure les més populars</string>
-    <string name="detail_original_title">"Títol Original: "</string>
+    <string name="detail_original_title">Títol Original:</string>
     <string name="action_refresh">Refrescar</string>
-    <string name="add_button">Afegir a preferides</string>
-    <string name="remove_favorite">Treure de preferides</string>
+    <string name="show_most_popular">Veure les més populars</string>
     <string name="message_add_favorite">S\'ha afegit la pel·lícula a preferits</string>
     <string name="message_removed_favorite">S\'ha tret la pel·lícula de preferits</string>
     <string name="author">Autor:</string>
