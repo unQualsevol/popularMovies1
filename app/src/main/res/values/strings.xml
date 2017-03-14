@@ -4,18 +4,17 @@
     <string name="rating_format" translatable="false">(%.1f)</string>
     <string name="year_format" translatable="false">%4.4s</string>
 
+
+    <string name="action_share">Share</string>
     <string name="not_available_error_message">The service is unavailable. Please try again by refresh the view.</string>
-    <string name="show_top_rated">Show top rated</string>
-    <string name="show_most_popular">Show most popular</string>
     <string name="detail_original_title">"Original Title: "</string>
     <string name="action_refresh">Refresh</string>
-    <string name="add_button">Add to Favorites</string>
-    <string name="remove_favorite">Remove from favorites</string>
     <string name="message_add_favorite">Movie added to favorites</string>
     <string name="message_removed_favorite">Movie removed from favorites</string>
     <string name="author">Author:</string>
     <string name="reviews">Reviews:</string>
     <string name="trailers">Trailers:</string>
+    <string name="share_message_format" translatable="false">%s\n%s</string>
 
 
     <!--Mocks -->

@@ -25,6 +25,8 @@ public final class NetworkUtils {
 
     private static final String IMAGEDB_BASE_URL = "http://image.tmdb.org/t/p/w500";
 
+    private static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch";
+
     final static String PATH_MOVIE = "movie";
     final static String PATH_REVIEWS = "reviews";
     final static String PATH_VIDEOS = "videos";
@@ -103,5 +105,11 @@ public final class NetworkUtils {
 
     public static Uri buildImageUri(String posterPath) {
         return Uri.parse(IMAGEDB_BASE_URL + posterPath).buildUpon().build();
+    }
+
+    public static Uri buildYoutubeUri(String key) {
+        return Uri.parse(YOUTUBE_BASE_URL).buildUpon()
+                .appendQueryParameter("v", key)
+                .build();
     }
 }

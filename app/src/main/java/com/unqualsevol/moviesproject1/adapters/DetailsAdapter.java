@@ -13,7 +13,6 @@ import com.unqualsevol.moviesproject1.interfaces.DataReceiver;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
 import com.unqualsevol.moviesproject1.model.DetailsMode;
 import com.unqualsevol.moviesproject1.model.Page;
-import com.unqualsevol.moviesproject1.model.Review;
 import com.unqualsevol.moviesproject1.model.ReviewsPage;
 import com.unqualsevol.moviesproject1.model.Trailer;
 import com.unqualsevol.moviesproject1.model.TrailersPage;
@@ -21,7 +20,9 @@ import com.unqualsevol.moviesproject1.tasks.FetchMoviesTask;
 import com.unqualsevol.moviesproject1.viewholders.DetailItemViewHolder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.unqualsevol.moviesproject1.tasks.FetchMoviesTask.FIRST_PAGE;
 
@@ -35,14 +36,21 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailItemViewHolder> i
     private int mCountTrailers = 0;
     private int mCountReviews = 0;
     private String mMovieId;
+    private DetailsMode mDetailsMode;
 
     private TrailersPage mTrailersPage;
     private SparseArray<ReviewsPage> mReviewsPageMap = new SparseArray<>();
     private List<Integer> loadingPages = new ArrayList<>();
+    private Set<OnRefreshCompleteListener> listeners = new HashSet<>();
 
     public DetailsAdapter(int movieId, DetailsMode mode) {
         this.mMovieId = String.valueOf(movieId);
+        this.mDetailsMode = mode;
         start(mode);
+    }
+
+    public void restart() {
+        start(mDetailsMode);
     }
 
     private void start(DetailsMode mode) {
@@ -58,6 +66,10 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailItemViewHolder> i
                 loadReviews(FIRST_PAGE);
                 break;
         }
+    }
+
+    public void registerOnRefreshCompleteListener(OnRefreshCompleteListener listener) {
+        listeners.add(listener);
     }
 
     private void loadTrailers() {
@@ -104,20 +116,20 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailItemViewHolder> i
     @Override
     public void onBindViewHolder(DetailItemViewHolder holder, int position) {
         if (position < mCountTrailers) {
-            Trailer trailer = mTrailersPage.getTrailers().get(position);
-            holder.updateViewHolder(R.drawable.trailer, trailer.getName(), null);
+            holder.updateViewHolder(mTrailersPage.getTrailers().get(position));
         } else {
             int reviewPosition = position - mCountTrailers;
             int page = 1 + reviewPosition / 20;
             int posInPage = reviewPosition % 20;
             ReviewsPage reviewsPage = mReviewsPageMap.get(page);
-            if(reviewsPage == null) {
+            if (reviewsPage == null) {
+                holder.showLoading();
                 if (!loadingPages.contains(page)) {
                     loadReviews(page);
                 }
             } else {
-                Review review = reviewsPage.getReviews().get(posInPage);
-                holder.updateViewHolder(R.drawable.review, review.getContent(), review.getAuthor());
+                holder.showData();
+                holder.updateViewHolder(reviewsPage.getReviews().get(posInPage));
             }
         }
     }
@@ -142,7 +154,11 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailItemViewHolder> i
 
     @Override
     public void setData(Page data) {
-        if (data instanceof ReviewsPage) {
+        if (data == null) {
+            for (OnRefreshCompleteListener listener : listeners) {
+                listener.onFailedRefresh();
+            }
+        } else if (data instanceof ReviewsPage) {
             savePage((ReviewsPage) data);
         } else if (data instanceof TrailersPage) {
             savePage((TrailersPage) data);
@@ -164,5 +180,13 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailItemViewHolder> i
             mCountTrailers = trailersPage.getTotalResults();
         }
         notifyDataSetChanged();
+    }
+
+    public Trailer getTrailer(int index) {
+        if (mCountTrailers < index) {
+            return null;
+        } else {
+            return mTrailersPage.getTrailers().get(index);
+        }
     }
 }
