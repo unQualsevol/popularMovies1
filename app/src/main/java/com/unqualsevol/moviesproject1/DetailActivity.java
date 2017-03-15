@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
@@ -31,6 +32,7 @@ import com.squareup.picasso.Target;
 import com.unqualsevol.moviesproject1.adapters.DetailsAdapter;
 import com.unqualsevol.moviesproject1.data.MoviesContract;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
+import com.unqualsevol.moviesproject1.model.ApplicationContract;
 import com.unqualsevol.moviesproject1.model.DetailsMode;
 import com.unqualsevol.moviesproject1.model.Movie;
 import com.unqualsevol.moviesproject1.model.Trailer;
@@ -102,14 +104,21 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @BindView(R.id.recyclerview_trailers)
     RecyclerView mTrailersRecyclerView;
 
+    @Nullable
+    @BindView(R.id.recyclerview_reviews)
+    RecyclerView mReviewsRecyclerView;
+
+    private DetailsAdapter mDetailsAdapter;
+    private DetailsAdapter mReviewsDetailsAdapter;
+
     private Movie mMovie;
+
     private int mMovieId;
 
     private Bitmap mPoster;
-
     private boolean mFromDatabase;
-    private boolean mErrorMessageVisible;
 
+    private boolean mErrorMessageVisible;
     private Target mTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -127,7 +136,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         }
     };
-    private DetailsAdapter mDetailsAdapter;
+    private boolean mDetailsSplited;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,21 +178,42 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         } else {
             mFavoriteFloatingActionButton.setImageResource(R.drawable.star);
         }
+        mDetailsSplited = mReviewsRecyclerView != null;
 
+        if(mDetailsSplited) {
+            initTrailersRecyclerView(DetailsMode.TRAILERS);
+            initReviewsRecyclerView(DetailsMode.REVIEWS);
+        } else {
+            initTrailersRecyclerView(DetailsMode.BOTH);
+        }
+
+        if (mErrorMessageVisible) {
+            onFailedRefresh();
+        }
+    }
+
+    private void initTrailersRecyclerView(DetailsMode mode) {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         mTrailersRecyclerView.addItemDecoration(dividerItemDecoration);
         mTrailersRecyclerView.setLayoutManager(layoutManager);
         mTrailersRecyclerView.setHasFixedSize(true);
-        mDetailsAdapter = new DetailsAdapter(mMovieId, DetailsMode.BOTH);
+        mDetailsAdapter = new DetailsAdapter(mMovieId, mode);
         mDetailsAdapter.registerOnRefreshCompleteListener(this);
         mTrailersRecyclerView.setAdapter(mDetailsAdapter);
+    }
 
-
-        if (mErrorMessageVisible) {
-            onFailedRefresh();
-        }
+    private void initReviewsRecyclerView(DetailsMode mode) {
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        mReviewsRecyclerView.addItemDecoration(dividerItemDecoration);
+        mReviewsRecyclerView.setLayoutManager(layoutManager);
+        mReviewsRecyclerView.setHasFixedSize(true);
+        mReviewsDetailsAdapter = new DetailsAdapter(mMovieId, mode);
+        mReviewsDetailsAdapter.registerOnRefreshCompleteListener(this);
+        mReviewsRecyclerView.setAdapter(mReviewsDetailsAdapter);
     }
 
     @Override
@@ -215,17 +245,16 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         Intent shareIntent = ShareCompat.IntentBuilder
                 .from(this)
-                .setType("text/plain")
+                .setType(ApplicationContract.MIME_TYPE_TEXT_PLAIN)
                 .setText(buildMessage(mMovie.getTitle(), trailer))
                 .getIntent();
         return shareIntent;
     }
 
     private String buildMessage(String title, Trailer trailer) {
-        return String.format(
-                getResources().getString(R.string.share_message_format,
+        return getResources().getString(R.string.share_message_format,
                         title,
-                        NetworkUtils.buildYoutubeUri(trailer.getKey())));
+                        NetworkUtils.buildYoutubeUri(trailer.getKey()));
     }
 
     @Override
@@ -347,7 +376,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 .setAction(R.string.action_refresh, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ((DetailsAdapter) mTrailersRecyclerView.getAdapter()).restart();
+                        mDetailsAdapter.restart();
+                        if (mDetailsSplited){
+                            mReviewsDetailsAdapter.restart();
+                        }
                         mErrorMessageVisible = false;
                     }
                 }).show();

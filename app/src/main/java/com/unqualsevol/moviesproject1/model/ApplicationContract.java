@@ -8,4 +8,5 @@ public class ApplicationContract {
     public static final String INTENT_EXTRA_MESSAGE_VISIBLE = "messageVisible";
 
 
+    public static final String MIME_TYPE_TEXT_PLAIN = "text/plain";
 }
