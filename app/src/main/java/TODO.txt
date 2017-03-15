@@ -12,8 +12,6 @@
     - Favorite a movie by keep pressing (*)
     - hide top bar when scroll down (*)
     - hide bottom bar (*)
-+ you’ll optimize your app experience for landscape.
-+ Lastly, you’ll optimize your app experience for tablet.
 
 
 
@@ -50,3 +48,5 @@ COMPLETED:
     - Apply material design DONE
     - Nice favorite button DONE
 + Implement sharing functionality to allow the user to share the first trailer’s YouTube URL from the movie details screen. (*) DONE
++ you’ll optimize your app experience for landscape. DONE
++ Lastly, you’ll optimize your app experience for tablet. DONE
