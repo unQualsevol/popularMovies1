@@ -21,7 +21,7 @@
 
     <include
         layout="@layout/review_list_tem"
-        android:layout_width="395dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         android:layout_marginStart="0dp"
