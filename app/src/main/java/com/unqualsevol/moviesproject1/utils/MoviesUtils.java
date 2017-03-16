@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.DisplayMetrics;
 
 import com.unqualsevol.moviesproject1.data.MoviesContract;
 import com.unqualsevol.moviesproject1.model.Movie;
@@ -40,5 +41,12 @@ public final class MoviesUtils {
 
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / 200);
+        return noOfColumns;
     }
 }

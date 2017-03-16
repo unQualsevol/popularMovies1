@@ -55,14 +55,19 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
         if (currentPage == null) {
             holder.setMovieData(null);
             holder.showLoading();
-            if (!loadingPages.contains(page)) {
-                loadingPages.add(page);
-                new FetchMoviesTask(this).execute(FetchMoviesTask.MOVIES, searchMode.getEntryPoint(), apiKey, language, String.valueOf(page));
-            }
+            loadMoviePage(page, searchMode);
         } else {
             Movie currentMovie = moviesPageMap.get(page).getMovies().get(posInPage);
             holder.setMovieData(currentMovie);
             holder.showData();
+        }
+    }
+
+    public void loadMoviePage(int page, SearchMode searchMode) {
+
+        if (moviesPageMap.get(page) == null && !loadingPages.contains(page)) {
+            loadingPages.add(page);
+            new FetchMoviesTask(this).execute(FetchMoviesTask.MOVIES, searchMode.getEntryPoint(), apiKey, language, String.valueOf(page));
         }
     }
 
@@ -106,8 +111,7 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterViewHolder> implem
 
     public void restart() {
         clear();
-        loadingPages.add(FetchMoviesTask.FIRST_PAGE);
-        new FetchMoviesTask(this).execute(FetchMoviesTask.MOVIES, searchMode.getEntryPoint(), apiKey, language, String.valueOf(FetchMoviesTask.FIRST_PAGE));
+        loadMoviePage(FetchMoviesTask.FIRST_PAGE, searchMode);
     }
 
     public void registerOnRefreshCompleteListener(OnRefreshCompleteListener listener) {
