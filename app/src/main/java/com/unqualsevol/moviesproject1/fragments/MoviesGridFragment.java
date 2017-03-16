@@ -3,6 +3,7 @@ package com.unqualsevol.moviesproject1.fragments;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -22,8 +23,12 @@ import com.unqualsevol.moviesproject1.adapters.PosterAdapter;
 import com.unqualsevol.moviesproject1.data.MoviesContract;
 import com.unqualsevol.moviesproject1.interfaces.OnRefreshCompleteListener;
 import com.unqualsevol.moviesproject1.model.SearchMode;
+import com.unqualsevol.moviesproject1.tasks.FetchMoviesTask;
 
 import static com.unqualsevol.moviesproject1.model.ApplicationContract.INTENT_EXTRA_SEARCH_TYPE;
+import static com.unqualsevol.moviesproject1.model.ApplicationContract.KEY_STATE_RV_MOVIES_LAYOUT_MANAGER_STATUS;
+import static com.unqualsevol.moviesproject1.model.ApplicationContract.KEY_STATE_RV_MOVIES_POSITION;
+import static com.unqualsevol.moviesproject1.utils.MoviesUtils.calculateNoOfColumns;
 
 public class MoviesGridFragment extends Fragment
         implements OnRefreshCompleteListener,
@@ -49,7 +54,11 @@ public class MoviesGridFragment extends Fragment
 
     private FavoritesAdapter mFavoritesAdapter = new FavoritesAdapter();
 
+    private GridLayoutManager mLayoutManager;
+
     private SearchMode mSearchMode;
+
+    private Parcelable mPreviousRecyclerViewStatus;
 
     public void setSearchType(SearchMode mSearchMode) {
         this.mSearchMode = mSearchMode;
@@ -60,8 +69,8 @@ public class MoviesGridFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_movies_grid, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_movies);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), getResources().getInteger(R.integer.number_of_columns));
-        mRecyclerView.setLayoutManager(layoutManager);
+        mLayoutManager = new GridLayoutManager(getContext(), calculateNoOfColumns(getContext()));
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         return view;
@@ -71,16 +80,26 @@ public class MoviesGridFragment extends Fragment
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(INTENT_EXTRA_SEARCH_TYPE, mSearchMode.ordinal());
+        outState.putInt(KEY_STATE_RV_MOVIES_POSITION, mLayoutManager.findFirstCompletelyVisibleItemPosition());
+        outState.putParcelable(KEY_STATE_RV_MOVIES_LAYOUT_MANAGER_STATUS, mLayoutManager.onSaveInstanceState());
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        int page = FetchMoviesTask.FIRST_PAGE;
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(INTENT_EXTRA_SEARCH_TYPE)) {
                 int searchTypeOrdinal = savedInstanceState.getInt(INTENT_EXTRA_SEARCH_TYPE);
                 mSearchMode = SearchMode.values()[searchTypeOrdinal];
+            }
+            if (savedInstanceState.containsKey(KEY_STATE_RV_MOVIES_POSITION)) {
+                int position = savedInstanceState.getInt(KEY_STATE_RV_MOVIES_POSITION);
+                page = 1 + position/20  ;
+            }
+            if(savedInstanceState.containsKey(KEY_STATE_RV_MOVIES_LAYOUT_MANAGER_STATUS)) {
+                mPreviousRecyclerViewStatus = savedInstanceState.getParcelable(KEY_STATE_RV_MOVIES_LAYOUT_MANAGER_STATUS);
             }
         }
 
@@ -90,7 +109,7 @@ public class MoviesGridFragment extends Fragment
                 mRecyclerView.setAdapter(mPosterAdapter);
                 mPosterAdapter.setSearchMode(mSearchMode);
                 mPosterAdapter.registerOnRefreshCompleteListener(this);
-                mPosterAdapter.restart();
+                mPosterAdapter.loadMoviePage(page, mSearchMode);
                 swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
@@ -123,6 +142,10 @@ public class MoviesGridFragment extends Fragment
     @Override
     public void onRefreshComplete() {
         swipeContainer.setRefreshing(false);
+        if(mPreviousRecyclerViewStatus != null) {
+            mLayoutManager.onRestoreInstanceState(mPreviousRecyclerViewStatus);
+            mPreviousRecyclerViewStatus = null;
+        }
     }
 
     @Override
